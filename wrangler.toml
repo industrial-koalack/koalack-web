@@ -1,0 +1,9 @@
+name = "koalack-web"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+SUPABASE_URL = "https://pxufnmleygsfnltmuebn.supabase.co"
+
+[assets]
+directory = "./"

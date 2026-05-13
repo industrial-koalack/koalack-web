@@ -791,26 +791,26 @@
           <div class="form-row">
             <div class="form-group">
               <label>Nombre *</label>
-              <input type="text" placeholder="Tu nombre" required />
+              <input type="text" name="nombre" placeholder="Tu nombre" required />
             </div>
             <div class="form-group">
               <label>Empresa</label>
-              <input type="text" placeholder="Nombre de empresa" />
+              <input type="text" name="empresa" placeholder="Nombre de empresa" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>Correo electrónico *</label>
-              <input type="email" placeholder="correo@ejemplo.com" required />
+              <input type="email" name="email" placeholder="correo@ejemplo.com" required />
             </div>
             <div class="form-group">
               <label>Teléfono</label>
-              <input type="tel" placeholder="+52 000 000 0000" />
+              <input type="tel" name="telefono" placeholder="+52 000 000 0000" />
             </div>
           </div>
           <div class="form-group">
             <label>Tipo de servicio de interés</label>
-            <select>
+            <select name="servicio">
               <option value="">Selecciona una opción</option>
               <option>Producción y Envasado</option>
               <option>Purificación Industrial</option>
@@ -823,9 +823,9 @@
           </div>
           <div class="form-group">
             <label>Mensaje *</label>
-            <textarea placeholder="Cuéntanos sobre tu necesidad de agua purificada, volumen estimado, cobertura requerida..." required></textarea>
+            <textarea name="mensaje" placeholder="Cuéntanos sobre tu necesidad de agua purificada, volumen estimado, cobertura requerida..." required></textarea>
           </div>
-          <button type="submit" class="form-submit">Enviar mensaje →</button>
+          <button type="submit" class="form-submit" id="formBtn">Enviar mensaje →</button>
         </form>
         <div class="form-success" id="formSuccess">
           <div class="check">✅</div>
@@ -912,10 +912,35 @@
   });
 
   // Form submission
-  function submitForm(e) {
+  async function submitForm(e) {
     e.preventDefault();
-    document.getElementById('theForm').style.display = 'none';
-    document.getElementById('formSuccess').style.display = 'block';
+    const form = document.getElementById('theForm');
+    const btn  = document.getElementById('formBtn');
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      const res = await fetch('/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (result.success) {
+        form.style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+      } else {
+        alert('Ocurrió un error al enviar. Por favor intenta de nuevo.');
+        btn.disabled = false;
+        btn.textContent = 'Enviar mensaje →';
+      }
+    } catch {
+      alert('Error de conexión. Por favor intenta de nuevo.');
+      btn.disabled = false;
+      btn.textContent = 'Enviar mensaje →';
+    }
   }
 
   // Fade-in on scroll
